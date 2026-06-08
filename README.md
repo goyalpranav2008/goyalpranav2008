@@ -2,8 +2,8 @@
 
 🎓 CSE @ Thapar Institute of Engineering & Technology '29  
 🔐 Cloud Security & Penetration Testing  
-🏆 TryHackMe Visionary | Top 25% Globally | 33-Day Streak  
-📍 India | Open to Remote Security Internships (Summer 2026)
+🏆 TryHackMe Adept| Top 15% Globally | 33-Day Streak  
+📍 India 
 
 ---
 
