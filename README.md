@@ -6,7 +6,6 @@
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=800&color=00E5FF&center=true&vCenter=true&width=600&lines=Breaking+things+to+learn+how+they+work...;Cloud+Security+%26+Penetration+Testing;TryHackMe+Top+15%25+Globally+%F0%9F%94%A5;Currently+hunting+for+a+cybersec+internship" alt="Typing SVG" />
 </a>
 
-<img src="https://komarev.com/ghpvc/?username=goyalpranav2008&label=Profile%20Views&color=00e5ff&style=flat" alt="profile views"/>
 
 </div>
 
