@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""
+Fetches live stats from TryHackMe's public badge endpoint (no auth required)
+and regenerates assets/thm-activity.svg with real numbers baked in.
+
+TryHackMe exposes an unauthenticated HTML fragment at:
+    https://tryhackme.com/api/v2/badges/public-profile?userPublicId=<ID>
+(this is the same endpoint their own <iframe> badge embed uses)
+
+Set THM_USER_PUBLIC_ID as a repo variable / env var. Find it via:
+  TryHackMe -> your profile -> Settings -> Badge -> copy the number
+  after userPublicId= in the iframe embed code.
+"""
+import os
+import re
+import sys
+import json
+import requests
+from bs4 import BeautifulSoup
+
+THM_USERNAME = os.environ.get("THM_USERNAME", "prnv15")
+THM_USER_PUBLIC_ID = os.environ.get("THM_USER_PUBLIC_ID", "")
+BADGE_URL = f"https://tryhackme.com/api/v2/badges/public-profile?userPublicId={THM_USER_PUBLIC_ID}"
+
+OUT_SVG = "assets/thm-activity.svg"
+OUT_JSON = "data/thm-stats.json"
+
+
+def fetch_stats():
+    if not THM_USER_PUBLIC_ID:
+        print("ERROR: THM_USER_PUBLIC_ID is not set.", file=sys.stderr)
+        sys.exit(1)
+
+    resp = requests.get(BADGE_URL, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+
+    # The badge is a small fragment; pull every non-empty text node in order.
+    texts = [t.strip() for t in soup.stripped_strings if t.strip()]
+    # Drop the trailing "tryhackme.com" link text if present.
+    texts = [t for t in texts if t.lower() != "tryhackme.com"]
+
+    # Best-effort positional mapping — TryHackMe hasn't published a schema for
+    # this fragment, so if their markup changes, adjust the indices below.
+    # Observed order: [username, level, points, streak, ...extra numbers]
+    stats = {
+        "username": texts[0] if len(texts) > 0 else THM_USERNAME,
+        "level": texts[1] if len(texts) > 1 else "",
+        "points": texts[2] if len(texts) > 2 else "",
+        "streak": texts[3] if len(texts) > 3 else "",
+        "raw": texts,  # keep everything so nothing is silently lost
+    }
+    return stats
+
+
+def build_svg(stats):
+    username = stats["username"]
+    level = stats["level"]
+    points = stats["points"]
+    streak = stats["streak"]
+
+    line1 = f"&gt; USER: {username}"
+    line2 = f"&gt; LEVEL: {level}"
+    line3 = f"&gt; POINTS: {points}"
+    line4 = f"&gt; STREAK: {streak}"
+
+    # Width budget per line so the typing clip-rect doesn't clip real text.
+    def w(text, per_char=8.6, pad=20):
+        return round(len(text) * per_char + pad)
+
+    svg = f'''<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="Consolas, 'Courier New', monospace">
+  <defs>
+    <linearGradient id="thmbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#0a1a1f"/>
+    </linearGradient>
+    <radialGradient id="radarFade" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="clipL1"><rect id="rL1" x="330" y="60" width="0" height="20"/></clipPath>
+    <clipPath id="clipL2"><rect id="rL2" x="330" y="92" width="0" height="20"/></clipPath>
+    <clipPath id="clipL3"><rect id="rL3" x="330" y="124" width="0" height="20"/></clipPath>
+    <clipPath id="clipL4"><rect id="rL4" x="330" y="156" width="0" height="20"/></clipPath>
+  </defs>
+
+  <rect width="640" height="240" fill="url(#thmbg)" rx="10"/>
+  <text x="20" y="26" fill="#58f0ff" font-size="14" font-weight="700" letter-spacing="1px">$ thm --scan --target {username} --mode live</text>
+  <line x1="0" y1="38" x2="640" y2="38" stroke="#1c2b30" stroke-width="1"/>
+
+  <g transform="translate(140,150)">
+    <circle r="90" fill="url(#radarFade)"/>
+    <circle r="90" fill="none" stroke="#123137" stroke-width="1.5"/>
+    <circle r="60" fill="none" stroke="#123137" stroke-width="1"/>
+    <circle r="30" fill="none" stroke="#123137" stroke-width="1"/>
+    <line x1="-90" y1="0" x2="90" y2="0" stroke="#123137" stroke-width="1"/>
+    <line x1="0" y1="-90" x2="0" y2="90" stroke="#123137" stroke-width="1"/>
+    <g>
+      <path d="M0,0 L90,0 A90,90 0 0,1 63.6,63.6 Z" fill="#00e5ff" opacity="0.25"/>
+      <line x1="0" y1="0" x2="90" y2="0" stroke="#00e5ff" stroke-width="2"/>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="5s" repeatCount="indefinite"/>
+    </g>
+    <g transform="rotate(40)">
+      <circle cx="55" cy="0" r="4" fill="#39ff88" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0.3;0" keyTimes="0;0.10;0.14;0.30;0.45" dur="5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <g transform="rotate(160)">
+      <circle cx="75" cy="0" r="4" fill="#ffe66d" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0.3;0" keyTimes="0;0.44;0.48;0.62;0.75" dur="5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <g transform="rotate(290)">
+      <circle cx="40" cy="0" r="4" fill="#00e5ff" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0.3;0" keyTimes="0;0.80;0.84;0.95;1" dur="5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <circle r="3" fill="#58f0ff"/>
+    <text x="0" y="112" text-anchor="middle" fill="#8b949e" font-size="11">TRYHACKME_RADAR</text>
+  </g>
+
+  <g>
+    <g clip-path="url(#clipL1)"><text x="330" y="75" fill="#39ff88" font-size="15">{line1}</text></g>
+    <g clip-path="url(#clipL2)"><text x="330" y="107" fill="#58f0ff" font-size="15">{line2}</text></g>
+    <g clip-path="url(#clipL3)"><text x="330" y="139" fill="#ffe66d" font-size="15">{line3}</text></g>
+    <g clip-path="url(#clipL4)"><text x="330" y="171" fill="#00e5ff" font-size="15">{line4}</text></g>
+
+    <rect x="330" y="182" width="9" height="16" fill="#39ff88">
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.51;1" dur="0.9s" repeatCount="indefinite"/>
+    </rect>
+
+    <animate href="#rL1" xlink:href="#rL1" attributeName="width" values="0;{w(line1)};{w(line1)};{w(line1)};0" keyTimes="0;0.08;0.75;0.85;1" dur="8s" repeatCount="indefinite"/>
+    <animate href="#rL2" xlink:href="#rL2" attributeName="width" values="0;0;{w(line2)};{w(line2)};{w(line2)};0" keyTimes="0;0.15;0.23;0.75;0.85;1" dur="8s" repeatCount="indefinite"/>
+    <animate href="#rL3" xlink:href="#rL3" attributeName="width" values="0;0;{w(line3)};{w(line3)};{w(line3)};0" keyTimes="0;0.30;0.38;0.75;0.85;1" dur="8s" repeatCount="indefinite"/>
+    <animate href="#rL4" xlink:href="#rL4" attributeName="width" values="0;0;{w(line4)};{w(line4)};{w(line4)};0" keyTimes="0;0.45;0.53;0.75;0.85;1" dur="8s" repeatCount="indefinite"/>
+  </g>
+
+  <text x="330" y="215" fill="#4a5a60" font-size="10">// live — refreshed by GitHub Actions</text>
+</svg>
+'''
+    return svg
+
+
+def main():
+    stats = fetch_stats()
+    svg = build_svg(stats)
+
+    os.makedirs(os.path.dirname(OUT_SVG), exist_ok=True)
+    with open(OUT_SVG, "w") as f:
+        f.write(svg)
+
+    os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
+    with open(OUT_JSON, "w") as f:
+        json.dump(stats, f, indent=2)
+
+    print("Updated", OUT_SVG, "with:", json.dumps(stats, indent=2))
+
+
+if __name__ == "__main__":
+    main()

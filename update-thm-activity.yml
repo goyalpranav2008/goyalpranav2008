@@ -1,0 +1,36 @@
+name: Update TryHackMe Live Activity
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch: {}      # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Fetch live TryHackMe stats and rebuild SVG
+        env:
+          THM_USERNAME: "prnv15"
+          THM_USER_PUBLIC_ID: ${{ vars.THM_USER_PUBLIC_ID }}
+        run: python scripts/update_thm_activity.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/thm-activity.svg data/thm-stats.json
+          git diff --staged --quiet || git commit -m "chore: refresh live TryHackMe activity"
+          git push
