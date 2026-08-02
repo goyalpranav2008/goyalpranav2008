@@ -59,11 +59,11 @@
 
 ---
 
-### `> thm --scan --target prnv15`
+### `> thm --scan --target prnv.51`
 
 <div align="center">
 
-<a href="https://tryhackme.com/p/prnv15">
+<a href="https://tryhackme.com/p/prnv.51">
 <img src="./assets/thm-activity.svg" width="640" alt="TryHackMe live activity scan" />
 </a>
 
@@ -118,7 +118,7 @@
 
 <div align="center">
 
-[![TryHackMe](https://img.shields.io/badge/TryHackMe-prnv15-red?style=for-the-badge&logo=tryhackme&labelColor=0d1117)](https://tryhackme.com/p/prnv15)
+[![TryHackMe](https://img.shields.io/badge/TryHackMe-prnv.51-red?style=for-the-badge&logo=tryhackme&labelColor=0d1117)](https://tryhackme.com/p/prnv.51)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Pranav%20Goyal-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=0d1117)](https://linkedin.com/in/pranavgoyal1505)
 
 <br/>
