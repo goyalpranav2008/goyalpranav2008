@@ -3,7 +3,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,100:0a1a1f&height=200&section=header&text=PRANAV%20GOYAL&fontSize=48&fontColor=00e5ff&animation=fadeIn&fontAlignY=38&desc=Cloud%20Security%20%7C%20Penetration%20Testing&descAlignY=58&descSize=18&descColor=8b949e" width="100%"/>
 
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=800&color=00E5FF&center=true&vCenter=true&width=600&lines=Breaking+things+to+learn+how+they+work...;Cloud+Security+%26+Penetration+Testing;TryHackMe+Top+15%25+Globally+%F0%9F%94%A5;Currently+hunting+for+a+cybersec+internship" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=800&color=00E5FF&center=true&vCenter=true&width=600&lines=Breaking+things+to+learn+how+they+work...;Cloud+Security+%26+Penetration+Testing;TryHackMe+Top+10%25+Globally+%F0%9F%94%A5;Currently+hunting+for+a+cybersec+internship" alt="Typing SVG" />
 </a>
 
 <img src="https://komarev.com/ghpvc/?username=goyalpranav2008&label=Profile%20Views&color=00e5ff&style=flat" alt="profile views"/>
@@ -16,8 +16,7 @@
 
 - 🎓 CSE @ Thapar Institute of Engineering & Technology, Class of '29
 - 🔐 Focused on **Cloud Security** & **Penetration Testing**
-- 🏆 TryHackMe **Adept** — Top 15% Globally — 33-Day Streak
-- 🎯 Targeting remote cybersecurity internships by **August 2026**
+- 🏆 TryHackMe **Adept** — Top 10% Globally 
 - 📍 India
 
 ---
